@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
 {
@@ -22,7 +23,7 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             return redirect('/');
         }
@@ -43,7 +44,7 @@ class AuthController extends Controller
     {
         $validatedData = $request->validate([
             'username' => ['required', 'unique:users', 'max:255'],
-            'email'    => ['required', 'unique:users', 'email:dns', 'max:255'],
+            'email'    => ['required', 'unique:users', 'email:dns', 'max:255', 'regex:/^[^@]+@[^@]+\..[^@]+$/'],
             'password' => ['required', 'max:255', 'min:8'],
             'confirm-password' => ['required', 'min:8', 'same:password'], 
             'phone'    => ['nullable', 'string', 'max:20'], 
@@ -53,8 +54,11 @@ class AuthController extends Controller
         $validatedData['password'] = Hash::make($validatedData['password']);
 
         $user = User::create($validatedData);
-        Session::flash('status', 'Registration successful! Please log in.');
-        return redirect('login');
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        return redirect()->route('verification.notice');
     }
 
     public function logout(Request $request)

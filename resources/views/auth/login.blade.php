@@ -44,6 +44,12 @@
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password">
                 </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                    <label class="form-check-label" for="remember">
+                        Remember Me
+                    </label>
+                </div>
                 <div class="mt-4">
                     <button type="submit" class="btn form-control btn-primary">Login</button>
                 </div>

@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'mailgun'),
 
     /*
     |--------------------------------------------------------------------------
@@ -36,6 +36,12 @@ return [
     */
 
     'mailers' => [
+        'mailgun' => [
+            'transport' => 'mailgun',
+            // 'client' => [
+            //     'timeout' => 5,
+            // ],
+        ],
 
         'smtp' => [
             'transport' => 'smtp',
@@ -55,7 +61,7 @@ return [
 
         'postmark' => [
             'transport' => 'postmark',
-            // 'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),
+            'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),
             // 'client' => [
             //     'timeout' => 5,
             // ],
