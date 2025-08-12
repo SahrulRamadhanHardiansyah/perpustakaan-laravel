@@ -1,0 +1,185 @@
+/* CSS Variables untuk tema yang konsisten */
+:root {
+    --primary-color: #4a90e2; /* Biru modern */
+    --secondary-color: #2c3a47; /* Abu-abu gelap untuk sidebar */
+    --background-color: #f4f7f6; /* Abu-abu sangat terang untuk konten */
+    --text-color: #333;
+    --text-light: #ffffff;
+    --hover-color: #3a75c4;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* --- Main Layout --- */
+.main {
+    /* Menggunakan tinggi viewport penuh */
+    height: 100vh;
+}
+
+.body-content {
+    /* flex-grow-1 akan membuat elemen ini mengisi sisa ruang vertikal */
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Navbar Style --- */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Navbar memiliki tinggi tetap, tidak akan stretch */
+    flex-shrink: 0;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: var(--primary-color) !important;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+/* --- Sidebar Style --- */
+.sidebar {
+    background: var(--secondary-color);
+    color: var(--text-light);
+    padding-top: 20px;
+    /* Sidebar akan otomatis mengikuti tinggi parent (.row.h-100) */
+}
+
+.sidebar a {
+    color: var(--text-light);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 25px;
+    margin: 5px 15px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: 500;
+}
+
+.sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar a.active {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Content Area --- */
+.content-container {
+    /* Container ini akan mengisi sisa ruang di dalam .row */
+    flex-grow: 1;
+}
+
+.content {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.card-data {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px; /* Sudut yang lebih tumpul */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05); /* Bayangan yang lembut */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left-width: 5px;
+    border-left-style: solid;
+    display: flex; /* Menggunakan flexbox untuk layout yang lebih baik */
+    align-items: center;
+    gap: 20px; /* Jarak antara ikon dan teks */
+}
+
+/* Efek saat mouse hover */
+.card-data:hover {
+    transform: translateY(-3px); /* Sedikit terangkat */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Lingkaran untuk ikon */
+.card-data .card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 32px; /* Ukuran ikon di dalam lingkaran */
+    flex-shrink: 0; /* Mencegah ikon menyusut */
+}
+
+/* Hierarki teks yang diperbaiki */
+.card-data .card-body .card-count {
+    font-size: 36px; /* Angka menjadi besar dan tebal */
+    font-weight: 700;
+    line-height: 1.2;
+    color: #343a40;
+}
+
+.card-data .card-body .card-desc {
+    font-size: 16px; /* Deskripsi lebih kecil dan ringan */
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* === Warna Tema untuk Setiap Kartu === */
+
+/* Kartu untuk Buku (Biru) */
+.card-books {
+    border-left-color: #4a90e2;
+}
+.card-books .card-icon {
+    background: linear-gradient(45deg, #4a90e2, #0056b3);
+}
+
+/* Kartu untuk Kategori (Hijau) */
+.card-categories {
+    border-left-color: #50c878;
+}
+.card-categories .card-icon {
+    background: linear-gradient(45deg, #50c878, #2e8b57);
+}
+
+/* Kartu untuk Pengguna (Oranye) */
+.card-users {
+    border-left-color: #f5a623;
+}
+.card-users .card-icon {
+    background: linear-gradient(45deg, #f5a623, #d98200);
+}
+
+/* Untuk membuat semua gambar sampul memiliki rasio aspek yang sama */
+.book-card .card-img-top {
+    aspect-ratio: 3 / 4; /* Rasio umum untuk sampul buku */
+    object-fit: cover; /* Memastikan gambar mengisi area tanpa distorsi */
+}
+
+/* Efek hover yang halus pada kartu */
+.book-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.book-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Posisi badge status di pojok kanan atas gambar */
+.card-status-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}

@@ -19,20 +19,25 @@ class AuthController extends Controller
     public function authenticating(Request $request)
     {
         $credentials = $request->validate([
-            'username' => ['required'],
+            'name' => ['required'],
             'password' => ['required'],
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect('/');
+            
+            if (Auth::user()->role == 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            }
+
+            return redirect()->intended('/');
         }
 
         Session::flash('status', 'The provided credentials do not match our records.');
 
         return back()->withErrors([
-            'username' => 'The provided credentials do not match our records.',
-        ])->onlyInput('username');
+            'name' => 'The provided credentials do not match our records.',
+        ])->onlyInput('name');
     }
 
     public function register()
@@ -43,7 +48,7 @@ class AuthController extends Controller
     public function registering(Request $request)
     {
         $validatedData = $request->validate([
-            'username' => ['required', 'unique:users', 'max:255'],
+            'name' => ['required', 'unique:users', 'max:255'],
             'email'    => ['required', 'unique:users', 'email:dns', 'max:255', 'regex:/^[^@]+@[^@]+\..[^@]+$/'],
             'password' => ['required', 'max:255', 'min:8'],
             'confirm-password' => ['required', 'min:8', 'same:password'], 
@@ -52,6 +57,7 @@ class AuthController extends Controller
         ]);
 
         $validatedData['password'] = Hash::make($validatedData['password']);
+        $validatedData['role'] = 'customer';
 
         $user = User::create($validatedData);
         event(new Registered($user));

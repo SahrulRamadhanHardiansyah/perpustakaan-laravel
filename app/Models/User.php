@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -19,18 +21,39 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var list<string>
      */
     protected $fillable = [
-        'username',
+        'name',
         'email',
         'password',
         'phone',
         'address',
+        'role',
     ];
+
+    public function peminjaman(): HasMany
+    {
+        return $this->hasMany(Peminjaman::class, 'id_user');
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function isPustakawan(): bool
+    {
+        return $this->role === 'pustakawan';
+    }
+
+    public function isSiswa(): bool
+    {
+        return $this->role === 'siswa';
+    }
 
     public function sluggable(): array
     {
         return [
             'slug' => [
-                'source' => 'username'
+                'source' => 'name'
             ]
         ];
     }

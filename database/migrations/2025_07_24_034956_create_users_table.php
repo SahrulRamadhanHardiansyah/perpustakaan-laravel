@@ -12,14 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id(); // Kolom primary key 'id'
-            $table->string('username')->unique(); // 'username' unik untuk setiap user
-            $table->string('email')->unique(); // 'username' unik untuk setiap user
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique(); 
             $table->string('password');
-            $table->string('phone')->nullable(); // 'phone' boleh kosong (nullable)
-            $table->text('address');
-            $table->string('slug')->unique(); // 'slug' juga harus unik
-            $table->timestamps(); // Membuat kolom 'created_at' dan 'updated_at' secara otomatis
+            $table->string('phone')->nullable(); 
+            $table->text('address')->nullable();    
+            $table->enum('role', ['pustakawan', 'siswa'])->default('siswa');
+            $table->string('slug')->unique(); 
+            $table->timestamps();
         });
     }
 

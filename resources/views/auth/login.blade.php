@@ -37,8 +37,8 @@
             <form action="" method="POST">
                 @csrf
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" name="username" id="username" value="{{ old('username') }}" placeholder="Enter your username">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="Enter your name">
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
