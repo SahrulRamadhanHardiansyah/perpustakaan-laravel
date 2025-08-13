@@ -4,71 +4,77 @@ namespace App\Http\Controllers;
 
 use App\Models\Jenis;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class JenisController extends Controller
 {
     public function index()
     {
         $jenis = Jenis::all();
-        return view('jenis', ['jenis' => $jenis]);
+        return view('admin.jenis', ['jenis' => $jenis]);
     }
 
     public function add()
     {
-        return view('jenis-add');
+        return view('admin.jenis-add');
     }
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => ['required', 'unique:categories', 'max:100'],
+        $validated = $request->validate([
+            'name' => 'required|string|max:100|unique:jenis,name',
         ]);
 
-        $jenis = Jenis::create($request->all());
-        return redirect('jenis')->with('status', 'Jenis Added Successfully!');
+        Jenis::create($validated);
+        return redirect('/admin/jenis')->with('status', 'Jenis berhasil ditambahkan!');
     }
 
     public function edit($slug)
     {
-        $jenis = Jenis::where('slug', $slug)->first();
+        $jenis = Jenis::where('slug', $slug)->firstOrFail();
         return view('admin.jenis-edit', ['jenis' => $jenis]);
     }
 
     public function update(Request $request, $slug)
     {
-        $validatedData = $request->validate([
-            'name' => ['required', 'unique:categories', 'max:100'],
+        $jenis = Jenis::where('slug', $slug)->firstOrFail();
+
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('jenis')->ignore($jenis->id),
+            ],
         ]);
 
-        $jenis = Jenis::where('slug', $slug)->first();
-        $jenis->slug = null;
-        $jenis->update($request->all());
-        return redirect('admin.jenis')->with('status', 'Jenis Edited Successfully!');
+        $jenis->update($validated);
+        return redirect('/admin/jenis')->with('status', 'Jenis berhasil diperbarui!');
     }
 
     public function delete($slug)
     {
-        $jenis = Jenis::where('slug', $slug)->first();
+        $jenis = Jenis::where('slug', $slug)->firstOrFail();
         return view('admin.jenis-delete', ['jenis' => $jenis]);
     }
 
     public function destroy($slug)
     {
-        $jenis = Jenis::where('slug', $slug)->first();
+        $jenis = Jenis::where('slug', $slug)->firstOrFail();
         $jenis->delete();
-        return redirect('admin.jenis')->with('status', 'Jenis Deleted Successfully!');
+        return redirect()->route('admin.jenis.index')->with('status', 'Jenis berhasil dihapus');
     }
 
     public function deleted()
     {
         $jenis = Jenis::onlyTrashed()->get();
-        return view('admin.jenis-deleted', ['deletedJenis' => $jenis]);
+        return view('admin.deleted-jenis', ['deletedJenis' => $jenis]);
     }
 
     public function restore($slug)
     {
-        $jenis = Jenis::withTrashed()->where('slug', $slug)->first();
+        $jenis = Jenis::withTrashed()->where('slug', $slug)->firstOrFail();
         $jenis->restore();
-        return redirect('admin.jenis')->with('status', 'Jenis Restored Successfully!');
+        return redirect()->route('admin.jenis.index')->with('status', 'Jenis berhasil dipulihkan!');
     }
 }

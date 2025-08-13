@@ -20,7 +20,7 @@
         @endif
     </div>
     <div class="w-25">
-        <form action="add-buku" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.buku.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mt-3">
                 <label for="judul" class="form-label">Judul</label>
@@ -32,16 +32,25 @@
             </div>
             <div class="mt-3">
                 <label for="jenis" class="form-label">Jenis</label>
-                <select name="jenis[]" id="jenis" class="form-select select-multiple" multiple>
+                <select name="jenis_id" id="jenis" class="form-control" required>
+                    <option value="">Pilih Jenis</option>
                     @foreach ($jenis as $item)
                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
             </div>
+            <div class="mt-3">
+                <label for="kondisi" class="form-label">Kondisi</label>
+                <input type="text" value="{{ old('kondisi') }}" name="kondisi" id="kondisi" placeholder="Masukkan kondisi buku" class="form-control">
+            </div>
+            <div class="mt-3">
+                <label for="stok" class="form-label">Stok</label>
+                <input type="number" value="{{ old('stok') }}" name="stok" id="stok" placeholder="Masukkan stok buku" class="form-control">
+            </div>
 
             <div class="mt-3">
                 <button class="btn btn-success me-2" type="submit">Tambah</button>
-                <a href="/buku" class="btn btn-primary">Batal</a>
+                <a href="{{ route('admin.buku.index') }}" class="btn btn-primary">Batal</a>
             </div>
         </form>
     </div>

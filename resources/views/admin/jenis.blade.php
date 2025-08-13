@@ -7,8 +7,8 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>List Jenis</h2>
         <div>
-            <a href="jenis-add" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Jenis</a>
-            <a href="jenis-deleted" class="btn btn-secondary"><i class="bi bi-eye me-2"></i>Lihat Data Dihapus</a>
+            <a href="{{ route('admin.jenis.add') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Jenis</a>
+            <a href="{{ route('admin.jenis.deleted') }}" class="btn btn-secondary"><i class="bi bi-eye me-2"></i>Lihat Data Dihapus</a>
         </div>
     </div>
 
@@ -40,8 +40,8 @@
                             <td class="text-center">{{ $loop->iteration }}</td>
                             <td>{{ $item->name }}</td>
                             <td class="text-center">
-                                <a href="jenis-edit/{{ $item->slug }}" class="btn btn-primary btn-sm" title="Edit"><i class="bi bi-pencil-square"></i></a>
-                                <a href="jenis-delete/{{ $item->slug }}" class="btn btn-danger btn-sm" title="Delete"><i class="bi bi-trash"></i></a>
+                                <a href="{{ route('admin.jenis.edit', $item->slug) }}" class="btn btn-primary btn-sm" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                <a href="{{ route('admin.jenis.delete', $item->slug) }}" class="btn btn-danger btn-sm" title="Delete"><i class="bi bi-trash"></i></a>
                             </td>
                         </tr>
                     @endforeach

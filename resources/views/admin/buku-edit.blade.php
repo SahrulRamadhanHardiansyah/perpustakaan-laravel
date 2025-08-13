@@ -20,12 +20,12 @@
         @endif
     </div>
     <div class="w-25">
-        <form action="/buku-edit/{{ $buku->slug }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.buku.update', $buku->slug) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('put')
             <div class="mt-3">
                 <label for="judul" class="form-label">Judul</label>
-                <input type="text" value="{{ $buku->judul }}" name="judul" id="judul" placeholder="Masukkan judul buku" class="form-control">
+                <input type="text" class="form-control" id="judul" name="judul" value="{{ old('judul', $buku->judul) }}" required>
             </div>
             <div class="mt-3">
                 <label for="gambar" class="form-label">Gambar</label>
@@ -33,32 +33,45 @@
             </div>
             <div class="mt-3">
                 <label for="currentImage" style="display: block" class="form-label">Gambar Saat Ini</label>
-                @if ($buku->cover != null)
-                    <img src="{{ asset('storage/cover/' . $buku->cover) }}" alt="" width="200">
+                @if ($buku->gambar)
+                    <img src="{{ asset('storage/' . $buku->gambar) }}" alt="Gambar Buku" width="200">
                 @else
-                    <img src="{{ asset('images/cover-not-found.jpg') }}" alt="" width="200">
+                    <p>Tidak ada gambar</p>
                 @endif
             </div>
             <div class="mt-3">
-                <label for="jenis" class="form-label">Jenis</label>
-                <select name="jenis[]" id="jenis" class="form-select select-multiple" multiple>
+                <label for="jenis" class="form-label">Jenis</slabel>
+                <select name="jenis_id" id="jenis" class="form-control" required>
+                    <option value="">Pilih Jenis</option>
                     @foreach ($jenis as $item)
-                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        <option value="{{ $item->id }}" {{ (old('jenis_id', $buku->jenis_id) == $item->id) ? 'selected' : '' }}>
+                            {{ $item->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
             <div class="mt-3">
                 <label for="currentJenis" class="form-label">Jenis Saat ini</label>
                 <ul>
-                    @foreach ($buku->jenis as $item)
-                        <li>{{ $item->name }}</li>
-                    @endforeach
+                    @if ($buku->jenis)
+                        <span class="badge text-bg-info">{{ $buku->jenis->name }}</span>
+                    @else
+                        <span class="badge text-bg-secondary">Tidak Ada Jenis</span>
+                    @endif
                 </ul>
+            </div>
+            <div class="mt-3">
+                <label for="kondisi" class="form-label">Kondisi</label>
+                <input type="text" value="{{ old('kondisi', $buku->kondisi) }}" name="kondisi" id="kondisi" placeholder="Masukkan kondisi buku" class="form-control">
+            </div>
+            <div class="mt-3">
+                <label for="stok" class="form-label">Stok</label>
+                <input type="number" value="{{ old('stok', $buku->stok) }}" name="stok" id="stok" placeholder="Masukkan stok buku" class="form-control">
             </div>
 
             <div class="mt-3">
                 <button class="btn btn-success me-2" type="submit">Edit</button>
-                <a href="/buku" class="btn btn-primary">Batal</a>
+                <a href="{{ route('admin.buku.index') }}" class="btn btn-primary">Batal</a>
             </div>
         </form>
     </div>

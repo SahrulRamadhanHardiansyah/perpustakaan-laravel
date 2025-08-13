@@ -19,9 +19,9 @@
 
     <div class="main d-flex flex-column">
         <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
+            <div class="container-fluid px-4">
                 <a class="navbar-brand" href="#">
-                    <i class="bi bi-book-half"></i> Rental Buku
+                    <i class="bi bi-book-half me-2"></i> Perpustakaan Laravel
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -33,53 +33,48 @@
             <div class="row g-0 h-100">
                 <div class="sidebar col-lg-2 collapse d-lg-block" id="sidebar">
                     @if (Auth::user())
-                        @if (Auth::user()->role_id == 1) {{-- Admin Pustakawan --}}
-                            <a href="{{ url('/dashboard') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">
+                        @if (Auth::user()->isPustakawan()) {{-- Admin Pustakawan --}}
+                            <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                                 <i class="bi bi-grid-fill"></i> Dashboard
                             </a>
-                            <a href="{{ url('/buku') }}" class="{{ Request::is('buku*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.buku.index') }}" class="{{ request()->routeIs('admin.buku*') ? 'active' : '' }}">
                                 <i class="bi bi-book"></i> Buku
                             </a>
-                            <a href="{{ url('/') }}" class="{{ Request::is('/') ? 'active' : '' }}">
-                                <i class="bi bi-person-fill"></i> List Buku
-                            </a>
-                            <a href="{{ url('/jenis') }}" class="{{ Request::is('jenis*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.jenis.index') }}" class="{{ request()->routeIs('admin.jenis*') ? 'active' : '' }}">
                                 <i class="bi bi-tags-fill"></i> Jenis
                             </a>
-                            <a href="{{ url('/siswa') }}" class="{{ Request::is('siswa*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.siswa.index') }}" class="{{ request()->routeIs('admin.siswa*') ? 'active' : '' }}">
                                 <i class="bi bi-people-fill"></i> Siswa
                             </a>
-                            <a href="{{ url('/pinjam-buku') }}" class="{{ Request::is('pinjam-buku*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.rent.buku') }}" class="{{ request()->routeIs('admin.rent.buku') ? 'active' : '' }}">
                                 <i class="bi bi-bag-plus-fill"></i> Pinjam Buku
                             </a>
-                            <a href="{{ url('/kembalikan-buku') }}" class="{{ Request::is('kembalikan-buku*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.return.buku') }}" class="{{ request()->routeIs('admin.return.buku') ? 'active' : '' }}">
                                 <i class="bi-arrow-return-left"></i> Kembalikan Buku
                             </a>
-                            <a href="{{ url('/peminjaman') }}" class="{{ Request::is('peminjaman*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.peminjaman') }}" class="{{ request()->routeIs('admin.peminjaman') ? 'active' : '' }}">
                                 <i class="bi bi-journals"></i> Log Peminjaman
                             </a>
                             <hr class="text-white my-3">
-                            <a href="{{ url('/logout') }}">
+                            <a href="{{ route('logout') }}">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a>
-                        @elseif (Auth::user()->role_id == 2) {{-- Siswa --}}
-                            <a href="{{ url('/') }}" class="{{ Request::is('/') ? 'active' : '' }}">
-                                <i class="bi bi-person-fill"></i> List Buku
+                        @elseif (Auth::user()->isSiswa()) {{-- Siswa --}}
+                            <a href="{{ route('welcome') }}" class="{{ request()->routeIs('welcome') ? 'active' : '' }}">
+                                <i class="bi bi-house-door-fill"></i> Beranda
                             </a>
-                            <a href="{{ url('/pinjam-buku') }}" class="{{ Request::is('pinjam-buku*') ? 'active' : '' }}">
+                            <a href="{{ route('pinjam.buku') }}" class="{{ request()->routeIs('pinjam.buku') ? 'active' : '' }}">
                                 <i class="bi bi-bag-plus-fill"></i> Pinjam Buku
                             </a>
-                            <a href="{{ url('/kembalikan-buku') }}" class="{{ Request::is('kembalikan-buku*') ? 'active' : '' }}">
-                                <i class="bi-arrow-return-left"></i> Kembalikan Buku
-                            </a>
-                            <a href="{{ url('/profile') }}" class="{{ Request::is('profile*') ? 'active' : '' }}">
+                            <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile*') ? 'active' : '' }}">
                                 <i class="bi bi-person-fill"></i> Profile
                             </a>
                             <hr class="text-white my-3">
-                            <a href="{{ url('/logout') }}">
+                            <a href="{{ route('logout') }}">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a>
                         @endif
+                    @endif
                 </div>
                 <div class="content-container p-4 col-lg-10">
                     <div class="content h-100 p-5">

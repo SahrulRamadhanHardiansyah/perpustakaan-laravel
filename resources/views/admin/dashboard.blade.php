@@ -5,7 +5,7 @@
 @section('content')
     <div class="mb-4">
         <h2>Dashboard</h2>
-        <p class="text-muted fs-5">Welcome, {{ Auth()->user()->username }}!</p>
+        <p class="text-muted fs-5">Welcome, {{ Auth()->user()->name }}!</p>
     </div>
 
     <div class="row gy-4">
@@ -49,7 +49,7 @@
     <div class="my-4">
         <h3 class="mb-3">Log Peminjaman Terbaru</h3>
         <div class="table-responsive">
-            <x-rent-logs-table :rentLogs='$rentLogs'/>
+            <x-log-peminjaman-table :logPeminjaman='$logPeminjaman'/>
         </div>
     </div>
 @endsection

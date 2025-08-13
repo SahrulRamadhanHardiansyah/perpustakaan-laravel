@@ -5,24 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Buku extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable, SoftDeletes; 
 
     protected $table = 'buku';
 
-    protected $fillable = [ 
+    protected $fillable = [
         'judul',
-        'jenis',
+        'jenis_id',
         'kondisi',
         'stok',
+        'gambar',
+        'slug',
     ];
 
-    public function peminjaman(): HasMany
+    public function sluggable(): array
     {
-        return $this->hasMany(Peminjaman::class, 'id_buku');
+        return [
+            'slug' => [
+                'source' => 'judul'
+            ]
+        ];
     }
 
     public function jenis(): BelongsTo
@@ -34,8 +41,8 @@ class Buku extends Model
     {
         if ($this->stok > 0) {
             return 'Tersedia';
-        } else {
-            return 'Habis';
         }
+
+        return 'Habis';
     }
 }

@@ -9,11 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, Sluggable;
+    use HasFactory, Notifiable, Sluggable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -26,14 +26,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'phone',
         'address',
-        'role',
+        'role_id',
     ];
 
+    /**
+     * Relasi ke tabel Peminjaman.
+     */
     public function peminjaman(): HasMany
     {
         return $this->hasMany(Peminjaman::class, 'id_user');
     }
 
+    /**
+     * Relasi ke tabel Role.
+     */
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
@@ -41,14 +47,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isPustakawan(): bool
     {
-        return $this->role === 'pustakawan';
+        return $this->role && $this->role->name === 'pustakawan';
     }
 
     public function isSiswa(): bool
     {
-        return $this->role === 'siswa';
+        return $this->role && $this->role->name === 'siswa';
     }
 
+    /**
+     * Konfigurasi untuk Sluggable.
+     */
     public function sluggable(): array
     {
         return [
@@ -58,10 +67,16 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    public function getStatusAttribute(): string
+    {
+        if ($this->deleted_at) {
+            return 'Banned';
+        }
+        return 'Active';
+    }
+
     /**
      * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -70,8 +85,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
      */
     protected function casts(): array
     {

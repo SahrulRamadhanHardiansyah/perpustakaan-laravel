@@ -14,22 +14,23 @@ class Peminjaman extends Model
     protected $table = 'peminjaman';
 
     protected $fillable = [
-        'id_user',
-        'id_buku',
+        'user_id',
+        'buku_id',
         'tgl_pinjam',
         'tgl_kembali',
+        'tgl_jatuh_tempo',
         'denda',
         'status',
     ];
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function buku(): BelongsTo
     {
-        return $this->belongsTo(Buku::class, 'id_buku');
+        return $this->belongsTo(Buku::class, 'buku_id');
     }
 
     public function isTerlambat(): bool

@@ -25,7 +25,7 @@
             </div>
             <div class="mt-3">
                 <button class="btn btn-success me-2" type="submit">Tambah</button>
-                <a href="/jenis" class="btn btn-primary">Batal</a>
+                <a href="{{ route('admin.jenis.index') }}" class="btn btn-primary">Batal</a>
             </div>
         </form>
     </div>

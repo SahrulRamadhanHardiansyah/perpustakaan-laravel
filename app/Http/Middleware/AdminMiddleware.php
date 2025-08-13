@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
+    
     /**
      * Handle an incoming request.
      *
@@ -16,10 +17,13 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->role == 'admin') {
+         /** @var \App\Models\User $user */
+            $user = Auth::user();
+
+        if (Auth::check() && $user->isPustakawan()) {
             return $next($request);
         }
 
-        return redirect('/')->with('error', 'You do not have admin access.');
+        return redirect('/')->with('error', 'You do not have pustakawan access.');
     }
 }

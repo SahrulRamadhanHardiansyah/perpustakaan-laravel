@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Buku;
+use App\Models\Jenis;
 use App\Models\Peminjaman;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -11,20 +12,42 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+     public function index(Request $request)
     {
-        $user = Auth::user();
-        $products = Product::latest()->get(); 
+        $jenis = Jenis::all();
+
+        $bukuQuery = Buku::with('jenis');
+
+        if ($request->filled('judul')) {
+            $bukuQuery->where('judul', 'like', '%' . $request->judul . '%');
+        }
+
+        if ($request->filled('jenis')) {
+            $bukuQuery->where('jenis_id', $request->jenis);
+        }
+
+        $buku = $bukuQuery->paginate(12);
 
         return view('welcome', [
-            'user' => $user,
-            'products' => $products
+            'buku' => $buku,
+            'jenis' => $jenis,
+            'user' => Auth::user(),
         ]);
     }
 
-    public function profile() {
+    public function profile()
+    {
         $user = Auth::user();
-        return view('profile.index', ['user' => $user]);
+
+        $logPeminjaman = Peminjaman::with(['user', 'buku'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get();
+
+        return view('profile.index', [
+            'user' => $user,
+            'logPeminjaman' => $logPeminjaman
+        ]);
     }
 
     public function edit() {

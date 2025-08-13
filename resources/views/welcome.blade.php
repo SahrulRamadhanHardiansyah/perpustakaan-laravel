@@ -38,23 +38,22 @@
             @forelse ($buku as $item)
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                     <div class="card h-100 book-card">
-                        
                         <div class="position-relative">
-                            <img src="{{ $item->cover != null ? asset('storage/cover/'.$item->cover) : asset('images/cover-not-found.png') }}" class="card-img-top" draggable="false" alt="{{ $item->slug }}">
-                            <span class="badge {{ $item->status == 'in stock' ? 'text-bg-success' : 'text-bg-danger' }} card-status-badge">
+                            <img src="{{ $item->gambar ? asset('storage/' . $item->gambar) : asset('images/cover-not-found.png') }}" class="card-img-top" draggable="false" alt="{{ $item->slug }}">
+                            
+                            <span class="badge {{ $item->status == 'Tersedia' ? 'text-bg-success' : 'text-bg-danger' }} card-status-badge">
                                 {{ $item->status }}
                             </span>
                         </div>
 
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ Str::limit($item->judul, 50, '...') }}</h5>
-                            
                             <div class="mb-3">
-                                @forelse ($item->jenis as $jenis)
-                                    <span class="badge text-bg-info me-1 mb-1">{{ $jenis->name }}</span>
-                                @empty
+                                @if ($item->jenis)
+                                    <span class="badge text-bg-info">{{ $item->jenis->name }}</span>
+                                @else
                                     <span class="badge text-bg-secondary">Tidak Ada Jenis</span>
-                                @endforelse
+                                @endif
                             </div>
                         </div>
                     </div>

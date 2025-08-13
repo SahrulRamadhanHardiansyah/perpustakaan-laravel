@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -26,11 +27,14 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             
-            if (Auth::user()->role == 'admin') {
-                return redirect()->intended('/admin/dashboard');
+             /** @var \App\Models\User $user */
+            $user = Auth::user();
+
+            if ($user->isPustakawan()) {
+                return redirect()->route('admin.dashboard');
             }
 
-            return redirect()->intended('/');
+            return redirect()->route('welcome');
         }
 
         Session::flash('status', 'The provided credentials do not match our records.');
@@ -49,16 +53,21 @@ class AuthController extends Controller
     {
         $validatedData = $request->validate([
             'name' => ['required', 'unique:users', 'max:255'],
-            'email'    => ['required', 'unique:users', 'email:dns', 'max:255', 'regex:/^[^@]+@[^@]+\..[^@]+$/'],
+            'email' => ['required', 'unique:users', 'email:dns', 'max:255'],
             'password' => ['required', 'max:255', 'min:8'],
-            'confirm-password' => ['required', 'min:8', 'same:password'], 
-            'phone'    => ['nullable', 'string', 'max:20'], 
-            'address'  => ['required', 'string'],
+            'phone' => ['nullable', 'string', 'max:20'], 
+            'address' => ['required', 'string'],
         ]);
 
-        $validatedData['password'] = Hash::make($validatedData['password']);
-        $validatedData['role'] = 'customer';
+        $siswaRole = Role::where('name', 'siswa')->first();
 
+        if (!$siswaRole) {
+            return back()->with('error', 'Registrasi gagal, role default tidak ditemukan.');
+        }
+
+        $validatedData['role_id'] = $siswaRole->id;
+        $validatedData['password'] = Hash::make($validatedData['password']);
+        
         $user = User::create($validatedData);
         event(new Registered($user));
 

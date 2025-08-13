@@ -6,7 +6,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>List Jenis Dihapus</h2>
-        <a href="/jenis" class="btn btn-primary"><i class="bi bi-arrow-left me-2"></i>Kembali ke List Jenis</a>
+        <a href="{{ route('admin.jenis.index') }}" class="btn btn-primary"><i class="bi bi-arrow-left me-2"></i>Kembali ke List Jenis</a>
     </div>
 
     <div class="mt-4">
@@ -32,7 +32,7 @@
                         <td class="text-center">{{ $loop->iteration }}</td>
                         <td>{{ $item->name }}</td>
                         <td class="text-center">
-                            <a href="jenis-restore/{{ $item->slug }}" class="btn btn-success btn-sm" title="Restore">
+                            <a href="{{ route('admin.jenis.restore', $item->slug) }}" class="btn btn-success btn-sm" title="Restore">
                                 <i class="bi bi-arrow-counterclockwise me-1"></i> Kembalikan
                             </a>
                         </td>

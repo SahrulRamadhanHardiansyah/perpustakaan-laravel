@@ -17,16 +17,16 @@
         @endif
     </div>
     <div class="w-25">
-        <form action="/jenis-edit/{{$jenis->slug}}" method="POST">
+        <form action="{{ route('admin.jenis.update', $jenis->slug) }}" method="POST">
             @csrf
             @method('put')
             <div class="">
                 <label for="name" class="form-label">Nama</label>
-                <input type="text" name="name" id="name" value="{{ $jenis->name }}" placeholder="Masukkan nama jenis" class="form-control">
+                <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $jenis->name) }}" required>
             </div>
             <div class="mt-3">
                 <button class="btn btn-success me-2" type="submit">Edit</button>
-                <a href="/jenis" class="btn btn-primary">Batal</a>
+                <a href="{{ route('admin.jenis.index') }}" class="btn btn-primary">Batal</a>
             </div>
         </form>
     </div>

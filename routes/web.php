@@ -52,6 +52,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');
         Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile/update', [UserController::class, 'update'])->name('profile.update');
+
+        Route::get('/pinjam-buku', [RentalBukuController::class, 'pinjamBuku'])->name('pinjam.buku');
+        Route::post('/pinjam-buku', [RentalBukuController::class, 'prosesPinjamBuku'])->name('proses.pinjam.buku');
     });
 
     // --- ADMIN PUSTAKAWAN ROUTE ---
@@ -59,36 +62,45 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
         // Manage Buku Routes
-        Route::get('buku', [BukuController::class, 'index']);
-        Route::get('add-buku', [BukuController::class, 'add']);
-        Route::post('add-buku', [BukuController::class, 'store']);
-        Route::get('buku-edit/{slug}', [BukuController::class, 'edit']);
-        Route::put('buku-edit/{slug}', [BukuController::class, 'update']);
-        Route::get('buku-delete/{slug}', [BukuController::class, 'delete']);
-        Route::get('buku-destroy/{slug}', [BukuController::class, 'destroy']);
-        Route::get('buku-deleted', [BukuController::class, 'deleted']);
-        Route::get('buku-restore/{slug}', [BukuController::class, 'restore']);
-        Route::get('rent-buku', [RentalBukuController::class, 'index']);
-        Route::post('rent-buku', [RentalBukuController::class, 'rent']);
-        Route::get('return-buku', [RentalBukuController::class, 'return']);
-        Route::post('return-buku', [RentalBukuController::class, 'returning']);
+        Route::get('buku', [BukuController::class, 'index'])->name('buku.index');
+        Route::get('add-buku', [BukuController::class, 'add'])->name('buku.add');
+        Route::post('add-buku', [BukuController::class, 'store'])->name('buku.store');
+        Route::get('buku-edit/{slug}', [BukuController::class, 'edit'])->name('buku.edit');
+        Route::put('buku-edit/{slug}', [BukuController::class, 'update'])->name('buku.update');
+        Route::get('buku-delete/{slug}', [BukuController::class, 'delete'])->name('buku.delete');
+        Route::get('buku-destroy/{slug}', [BukuController::class, 'destroy'])->name('buku.destroy');
+        Route::get('buku-deleted', [BukuController::class, 'deleted'])->name('buku.deleted');
+        Route::get('buku-restore/{slug}', [BukuController::class, 'restore'])->name('buku.restore');
+
+        // Peminjaman dan Pengembalian
+        Route::get('rent-buku', [RentalBukuController::class, 'index'])->name('rent.buku');
+        Route::post('rent-buku', [RentalBukuController::class, 'rent'])->name('rent.buku.store');
+        Route::get('return-buku', [RentalBukuController::class, 'return'])->name('return.buku');
+        Route::post('return-buku', [RentalBukuController::class, 'returning'])->name('proses.return.buku');
+        Route::get('peminjaman', [RentalBukuController::class, 'peminjaman'])->name('peminjaman');
 
         // Manage Jenis Routes
-        Route::get('jenis', [JenisController::class, 'index']);
-        Route::get('jenis-add', [JenisController::class, 'add']);
-        Route::post('jenis-add', [JenisController::class, 'store']);
-        Route::get('jenis-edit/{slug}', [JenisController::class, 'edit']);
-        Route::put('jenis-edit/{slug}', [JenisController::class, 'update']);
-        Route::get('jenis-delete/{slug}', [JenisController::class, 'delete']);
-        Route::get('jenis-destroy/{slug}', [JenisController::class, 'destroy']);
-        Route::get('jenis-deleted', [JenisController::class, 'deleted']);
-        Route::get('jenis-restore/{slug}', [JenisController::class, 'restore']);
-    
+        Route::get('jenis', [JenisController::class, 'index'])->name('jenis.index');
+        Route::get('jenis-add', [JenisController::class, 'add'])->name('jenis.add');
+        Route::post('jenis-add', [JenisController::class, 'store'])->name('jenis.store');
+        Route::get('jenis-edit/{slug}', [JenisController::class, 'edit'])->name('jenis.edit');
+        Route::put('jenis-edit/{slug}', [JenisController::class, 'update'])->name('jenis.update');
+        Route::get('jenis-delete/{slug}', [JenisController::class, 'delete'])->name('jenis.delete');
+        Route::get('jenis-destroy/{slug}', [JenisController::class, 'destroy'])->name('jenis.destroy');
+        Route::get('jenis-deleted', [JenisController::class, 'deleted'])->name('jenis.deleted');
+        Route::get('jenis-restore/{slug}', [JenisController::class, 'restore'])->name('jenis.restore');
+
         // Manage Siswa Routes
-        Route::get('siswa', [UserController::class, 'index']);
-        Route::get('siswa-ban/{slug}', [UserController::class, 'ban']);
-        Route::get('siswa-delete/{slug}', [UserController::class, 'delete']);
-        Route::get('siswa-banned', [UserController::class, 'banned']);
-        Route::get('siswa-restore/{slug}', [UserController::class, 'restore']);
+        Route::get('siswa', [AdminController::class, 'showSiswa'])->name('siswa.index');
+        Route::get('siswa-detail/{slug}', [AdminController::class, 'detail'])->name('siswa.detail');
+
+        // Menampilkan halaman konfirmasi ban
+        Route::get('siswa-ban/{slug}', [AdminController::class, 'ban'])->name('siswa.ban');
+        // Memproses ban (soft delete)
+        Route::delete('siswa-destroy/{slug}', [AdminController::class, 'destroy'])->name('siswa.destroy');
+
+        // Melihat siswa yang di-ban
+        Route::get('siswa-banned', [AdminController::class, 'banned'])->name('siswa.banned');
+        Route::post('siswa-restore/{slug}', [AdminController::class, 'restore'])->name('siswa.restore');
     });
 });
