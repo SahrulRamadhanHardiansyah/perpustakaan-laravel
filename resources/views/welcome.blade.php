@@ -48,12 +48,16 @@
 
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ Str::limit($item->judul, 50, '...') }}</h5>
-                            <div class="mb-3">
+                            <div class="mb-3 d-flex justify-content-between">
                                 @if ($item->jenis)
-                                    <span class="badge text-bg-info">{{ $item->jenis->name }}</span>
+                                    <span class="badge text-bg-info me-1">{{ $item->jenis->name }}</span>
                                 @else
-                                    <span class="badge text-bg-secondary">Tidak Ada Jenis</span>
+                                    <span class="badge text-bg-secondary me-1">Tidak Ada Jenis</span>
                                 @endif
+
+                                <span class="badge {{ $item->stok > 0 ? 'text-bg-success' : 'text-bg-danger' }}">
+                                    Stok: {{ $item->stok }}
+                                </span>
                             </div>
                         </div>
                     </div>

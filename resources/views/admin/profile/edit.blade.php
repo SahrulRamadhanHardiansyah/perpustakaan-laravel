@@ -34,7 +34,7 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('profile.update') }}">
+                        <form method="POST" action="{{ route('admin.profile.update') }}">
                             @csrf
                             @method('PATCH') <div class="mb-3">
                                 <label for="name" class="form-label">Nama</label>
@@ -54,11 +54,11 @@
 
                             <div class="mb-3">
                                 <label for="address" class="form-label">Alamat</label>
-                                <textarea class="form-control" id="address" name="address" rows="3" required>{{ old('address', $user->address) }}</textarea>
+                                <textarea class="form-control" id="address" name="address" rows="3">{{ old('address', $user->address) }}</textarea>
                             </div>
 
                             <button type="submit" class="btn btn-primary">Perbarui Profil</button>
-                            <a href="{{ route('profile') }}" class="btn btn-secondary">Batal</a>
+                            <a href="{{ route('admin.profile.index') }}" class="btn btn-secondary">Batal</a>
                         </form>
                     </div>
                 </div>

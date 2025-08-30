@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['pustakawan', 'siswa'])->default('siswa');
+            $table->enum('role', ['Pustakawan', 'Siswa'])->default('Siswa');
             $table->dropForeign(['role_id']);
             $table->dropColumn('role_id');
         });

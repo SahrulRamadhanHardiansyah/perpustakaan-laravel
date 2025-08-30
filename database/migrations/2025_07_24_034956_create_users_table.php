@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone')->nullable(); 
             $table->text('address')->nullable();    
-            $table->enum('role', ['pustakawan', 'siswa'])->default('siswa');
+            $table->enum('role', ['Pustakawan', 'Siswa'])->default('Siswa');
             $table->string('slug')->unique(); 
             $table->timestamps();
         });

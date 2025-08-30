@@ -6,8 +6,13 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>{{ $siswa->name }}</h2>
-        <div>
-            <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left me-2"></i>Kembali ke Daftar Siswa</a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Kembali ke Daftar Siswa
+            </a>
+            <a href="{{ route('admin.siswa.edit', $siswa->slug) }}" class="btn btn-primary">
+                <i class="bi bi-pencil-square me-2"></i>Edit Siswa
+            </a>
         </div>
     </div>
 
@@ -28,8 +33,14 @@
                 <dd class="col-sm-9">{{ $siswa->phone ?: '-' }}</dd>
 
                 <dt class="col-sm-3">Alamat</dt>
-                <dd class="col-sm-9">{{ $siswa->address }}</dd>
+                <dd class="col-sm-9">{{ $siswa->address ?: '-' }}</dd>
 
+                <dt class="col-sm-3">Peran</dt>
+                <dd class="col-sm-9">
+                    <span class="badge {{ $siswa->role->name == 'Pustakawan' ? 'text-bg-primary' : 'text-bg-success' }}">
+                        {{ $siswa->role->name }}
+                    </span>
+                </dd>
                 <dt class="col-sm-3">Status</dt>
                 <dd class="col-sm-9">
                     <span class="badge {{ $siswa->status == 'Active' ? 'text-bg-success' : 'text-bg-danger' }}">

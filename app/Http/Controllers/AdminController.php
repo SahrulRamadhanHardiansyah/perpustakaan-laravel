@@ -6,6 +6,8 @@ use App\Models\Buku;
 use App\Models\Jenis;
 use App\Models\Peminjaman;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -27,6 +29,34 @@ class AdminController extends Controller
         ]);
     }
 
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('admin.profile.index', ['user' => $user]);
+    }
+
+    public function profileEdit()
+    {
+        $user = Auth::user();
+        return view('admin.profile.edit', ['user' => $user]);
+    }
+
+    public function profileUpdate(Request $request)
+    {
+        $user = User::find(Auth::id());
+
+        $request->validate([
+            'name' => 'string|max:255',
+            'email' => 'email|max:255',
+            'phone' => 'numeric',
+            'address' => 'string|nullable',
+        ]);
+
+        $user->update($request->only('name', 'email', 'phone', 'address'));
+
+        return redirect()->route('admin.profile.index')->with('status', 'Profil berhasil diperbarui.');
+    }
+
     public function showSiswa()
     {
         $siswa = User::whereHas('role', function ($query) {
@@ -41,6 +71,28 @@ class AdminController extends Controller
         $siswa = User::where('slug', $slug)->firstOrFail();
         $logPeminjaman = Peminjaman::with(['user', 'buku'])->where('user_id', $siswa->id)->latest()->get();
         return view('admin.siswa.detail', ['siswa' => $siswa, 'logPeminjaman' => $logPeminjaman]);
+    }
+
+    public function edit($slug)
+    {
+        $siswa = User::where('slug', $slug)->firstOrFail();
+        return view('admin.siswa.edit', ['siswa' => $siswa]);
+    }
+
+    public function update(Request $request, $slug) {
+        $siswa = User::where('slug', $slug)->firstOrFail();
+
+        $request->validate([
+            'name' => 'string|max:255',
+            'email' => 'email|max:255',
+            'phone' => 'numeric',
+            'address' => 'string|nullable',
+            'role_id' => 'in:1,2',
+        ]);
+
+        $siswa->update($request->only('name', 'phone', 'address', 'role_id'));
+
+        return redirect()->route('admin.siswa.index')->with('status', 'Siswa berhasil diperbarui.');
     }
     
     public function ban($slug)
