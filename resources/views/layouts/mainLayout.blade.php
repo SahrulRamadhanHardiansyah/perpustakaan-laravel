@@ -55,6 +55,9 @@
                             <a href="{{ route('admin.peminjaman') }}" class="{{ request()->routeIs('admin.peminjaman') ? 'active' : '' }}">
                                 <i class="bi bi-journals"></i> Log Peminjaman
                             </a>
+                            <a href="{{ route('admin.profile.index') }}" class="{{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
+                                <i class="bi bi-person-fill"></i> Profile
+                            </a>
                             <hr class="text-white my-3">
                             <a href="{{ route('logout') }}">
                                 <i class="bi bi-box-arrow-right"></i> Logout

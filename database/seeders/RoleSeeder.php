@@ -9,7 +9,7 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        Role::create(['name' => 'pustakawan']);
-        Role::create(['name' => 'siswa']);
+        Role::create(['name' => 'Pustakawan']);
+        Role::create(['name' => 'Siswa']);
     }
 }

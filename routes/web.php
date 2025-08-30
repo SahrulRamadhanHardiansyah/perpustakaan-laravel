@@ -60,6 +60,9 @@ Route::middleware('auth')->group(function () {
     // --- ADMIN PUSTAKAWAN ROUTE ---
     Route::middleware([\App\Http\Middleware\AdminMiddleware::class, 'verified'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [AdminController::class, 'profile'])->name('profile.index');
+        Route::get('/profile/edit', [AdminController::class, 'profileEdit'])->name('profile.edit');
+        Route::patch('/profile/update', [AdminController::class, 'profileUpdate'])->name('profile.update');
 
         // Manage Buku Routes
         Route::get('buku', [BukuController::class, 'index'])->name('buku.index');
@@ -93,13 +96,10 @@ Route::middleware('auth')->group(function () {
         // Manage Siswa Routes
         Route::get('siswa', [AdminController::class, 'showSiswa'])->name('siswa.index');
         Route::get('siswa-detail/{slug}', [AdminController::class, 'detail'])->name('siswa.detail');
-
-        // Menampilkan halaman konfirmasi ban
+        Route::get('siswa-edit/{slug}', [AdminController::class, 'edit'])->name('siswa.edit');
+        Route::put('siswa-edit/{slug}', [AdminController::class, 'update'])->name('siswa.update');
         Route::get('siswa-ban/{slug}', [AdminController::class, 'ban'])->name('siswa.ban');
-        // Memproses ban (soft delete)
         Route::delete('siswa-destroy/{slug}', [AdminController::class, 'destroy'])->name('siswa.destroy');
-
-        // Melihat siswa yang di-ban
         Route::get('siswa-banned', [AdminController::class, 'banned'])->name('siswa.banned');
         Route::post('siswa-restore/{slug}', [AdminController::class, 'restore'])->name('siswa.restore');
     });
