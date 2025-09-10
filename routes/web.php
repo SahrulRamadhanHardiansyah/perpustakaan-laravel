@@ -43,18 +43,31 @@ Route::middleware('auth')->group(function () {
         return back()->with('message', 'Verification link sent!');
     })->middleware('throttle:6,1')->name('verification.resend');
 
+    // Dashboard
+    Route::get('/', [UserController::class, 'index'])->name('welcome');
+
     // Logout
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
     // --- SISWA ROUTE---
-    Route::middleware('verified')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('welcome');
+    Route::middleware([\App\Http\Middleware\SiswaMiddleware::class,'verified'])->group(function () {
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');
         Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile/update', [UserController::class, 'update'])->name('profile.update');
 
         Route::get('/pinjam-buku', [RentalBukuController::class, 'pinjamBuku'])->name('pinjam.buku');
         Route::post('/pinjam-buku', [RentalBukuController::class, 'prosesPinjamBuku'])->name('proses.pinjam.buku');
+    });
+
+    // --- GURU ROUTE ---
+    Route::middleware([\App\Http\Middleware\GuruMiddleware::class, 'verified'])->prefix('guru')->name('guru.')->group(function () {
+        Route::get('siswa', [AdminController::class, 'showSiswa'])->name('siswa.index');
+        Route::get('rent-buku', [RentalBukuController::class, 'index'])->name('rent.buku');
+        Route::post('rent-buku', [RentalBukuController::class, 'rent'])->name('rent.buku.store');
+        Route::get('return-buku', [RentalBukuController::class, 'return'])->name('return.buku');
+        Route::post('return-buku', [RentalBukuController::class, 'returning'])->name('proses.return.buku');
+        Route::get('peminjaman', [RentalBukuController::class, 'peminjaman'])->name('peminjaman');
+        Route::get('/profile', [AdminController::class, 'profile'])->name('profile.index');
     });
 
     // --- ADMIN PUSTAKAWAN ROUTE ---

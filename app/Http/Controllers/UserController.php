@@ -14,8 +14,10 @@ class UserController extends Controller
 {
      public function index(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
         $jenis = Jenis::all();
-
         $bukuQuery = Buku::with('jenis');
 
         if ($request->filled('judul')) {
@@ -28,10 +30,16 @@ class UserController extends Controller
 
         $buku = $bukuQuery->paginate(12);
 
+        $pinjamanSiswa = null;
+        if ($user->isSiswa()) {
+            $pinjamanSiswa = Peminjaman::where('user_id', $user->id)->whereNull('tgl_kembali')->get();
+        }
+        
         return view('welcome', [
+            'user' => $user,
             'buku' => $buku,
             'jenis' => $jenis,
-            'user' => Auth::user(),
+            'pinjamanSiswa' => $pinjamanSiswa,
         ]);
     }
 

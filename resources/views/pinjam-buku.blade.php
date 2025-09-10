@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="mt-4">
-                        <button class="btn btn-primary" type="submit"><i class="bi bi-journal-plus me-2"></i>Kirim Permintaan Pinjam</button>
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-journal-plus me-2"></i>Pinjam Buku</button>
                         <a href="/" class="btn btn-secondary">Batal</a>
                     </div>
                 </form>

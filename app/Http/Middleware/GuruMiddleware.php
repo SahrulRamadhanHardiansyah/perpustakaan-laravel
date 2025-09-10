@@ -7,9 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class GuruMiddleware
 {
-    
     /**
      * Handle an incoming request.
      *
@@ -20,10 +19,10 @@ class AdminMiddleware
          /** @var \App\Models\User $user */
             $user = Auth::user();
 
-        if (Auth::check() && $user->isPustakawan()) {
+        if (Auth::check() && $user->isGuru() || $user->isPustakawan()) {
             return $next($request);
         }
 
-        return redirect('/')->with('error', 'Kamu tidak memiliki akses sebagai admin pustakawan.');
+        return redirect('/')->with('error', 'Kamu tidak memiliki akses sebagai guru atau pustakawan.');
     }
 }

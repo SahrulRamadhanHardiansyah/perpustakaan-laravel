@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="mb-4">
-        <h2>Dashboard</h2>
+        <h2>Dashboard Admin</h2>
         <p class="text-muted fs-5">Welcome, {{ Auth()->user()->name }}!</p>
     </div>
 

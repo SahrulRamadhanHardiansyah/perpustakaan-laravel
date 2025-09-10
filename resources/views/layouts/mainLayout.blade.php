@@ -37,6 +37,9 @@
                             <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                                 <i class="bi bi-grid-fill"></i> Dashboard
                             </a>
+                            <a href="{{ route('welcome') }}" class="{{ request()->routeIs('welcome') ? 'active' : '' }}">
+                                <i class="bi bi-house-door-fill"></i> Beranda
+                            </a>
                             <a href="{{ route('admin.buku.index') }}" class="{{ request()->routeIs('admin.buku*') ? 'active' : '' }}">
                                 <i class="bi bi-book"></i> Buku
                             </a>
@@ -55,12 +58,21 @@
                             <a href="{{ route('admin.peminjaman') }}" class="{{ request()->routeIs('admin.peminjaman') ? 'active' : '' }}">
                                 <i class="bi bi-journals"></i> Log Peminjaman
                             </a>
-                            <a href="{{ route('admin.profile.index') }}" class="{{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
-                                <i class="bi bi-person-fill"></i> Profile
+                        @elseif (Auth::user()->isGuru()) {{-- Guru --}}
+                            <a href="{{ route('welcome') }}" class="{{ request()->routeIs('welcome') ? 'active' : '' }}">
+                                <i class="bi bi-house-door-fill"></i> Beranda
                             </a>
-                            <hr class="text-white my-3">
-                            <a href="{{ route('logout') }}">
-                                <i class="bi bi-box-arrow-right"></i> Logout
+                            <a href="{{ route('guru.siswa.index') }}" class="{{ request()->routeIs('guru.siswa*') ? 'active' : '' }}">
+                                <i class="bi bi-people-fill"></i> Siswa
+                            </a>
+                            <a href="{{ route('guru.rent.buku') }}" class="{{ request()->routeIs('guru.rent.buku') ? 'active' : '' }}">
+                                <i class="bi bi-bag-plus-fill"></i> Pinjam Buku
+                            </a>
+                            <a href="{{ route('guru.return.buku') }}" class="{{ request()->routeIs('guru.return.buku') ? 'active' : '' }}">
+                                <i class="bi-arrow-return-left"></i> Kembalikan Buku
+                            </a>
+                            <a href="{{ route('guru.peminjaman') }}" class="{{ request()->routeIs('guru.peminjaman') ? 'active' : '' }}">
+                                <i class="bi bi-journals"></i> Log Peminjaman
                             </a>
                         @elseif (Auth::user()->isSiswa()) {{-- Siswa --}}
                             <a href="{{ route('welcome') }}" class="{{ request()->routeIs('welcome') ? 'active' : '' }}">
@@ -69,14 +81,15 @@
                             <a href="{{ route('pinjam.buku') }}" class="{{ request()->routeIs('pinjam.buku') ? 'active' : '' }}">
                                 <i class="bi bi-bag-plus-fill"></i> Pinjam Buku
                             </a>
-                            <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile*') ? 'active' : '' }}">
-                                <i class="bi bi-person-fill"></i> Profile
-                            </a>
-                            <hr class="text-white my-3">
-                            <a href="{{ route('logout') }}">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </a>
                         @endif
+                        <a href="{{ Auth::user()->isSiswa() ? route('profile') : (Auth::user()->isGuru() ? route('guru.profile.index') : route('admin.profile.index')) }}"
+                            class="{{ request()->routeIs('profile*') || request()->routeIs('admin.profile*') || request()->routeIs('guru.profile*') ? 'active' : '' }}">
+                            <i class="bi bi-person-fill"></i> Profile
+                        </a>
+                        <hr class="text-white my-3"> {{-- Seperator --}}
+                        <a href="{{ route('logout') }}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
                     @endif
                 </div>
                 <div class="content-container p-4 col-lg-10">

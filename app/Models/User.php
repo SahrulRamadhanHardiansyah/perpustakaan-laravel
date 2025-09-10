@@ -50,6 +50,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role && $this->role->name === 'Pustakawan';
     }
 
+    public function isGuru(): bool
+    {
+        return $this->role && $this->role->name === 'Guru';
+    }
+
     public function isSiswa(): bool
     {
         return $this->role && $this->role->name === 'Siswa';

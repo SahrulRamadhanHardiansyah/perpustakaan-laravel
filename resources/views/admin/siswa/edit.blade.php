@@ -41,6 +41,7 @@
                 <select class="form-select" id="role_id" name="role_id" required>
                     <option value="2" {{ old('role_id', $siswa->role_id) == 2 ? 'selected' : '' }}>Siswa</option>
                     <option value="1" {{ old('role_id', $siswa->role_id) == 1 ? 'selected' : '' }}>Pustakawan</option>
+                    <option value="3" {{ old('role_id', $siswa->role_id) == 3 ? 'selected' : '' }}>Guru</option>
                 </select>
             </div>
             <div class="mt-3">
