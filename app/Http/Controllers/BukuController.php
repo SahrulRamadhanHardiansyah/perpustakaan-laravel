@@ -6,14 +6,59 @@ use App\Models\Buku;
 use App\Models\Category;
 use App\Models\Jenis;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BukuController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $buku = Buku::with('jenis')->get();
-        return view('admin.buku', ['buku' => $buku]);
+        $jenis = Jenis::all();
+
+        $bukuQuery = Buku::with('jenis');
+
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+            $bukuQuery->where(function ($query) use ($keyword) {
+                $query->where('judul', 'like', '%' . $keyword . '%')
+                    ->orWhere('author', 'like', '%' . $keyword . '%')
+                    ->orWhere('barcode', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        if ($request->filled('jenis')) {
+            $bukuQuery->where('jenis_id', $request->jenis);
+        }
+
+        $buku = $bukuQuery->latest()->paginate(10);
+        
+        return view('admin.buku', [
+            'buku' => $buku,
+            'jenis' => $jenis
+        ]);
+    }
+
+    public function show(Buku $buku)
+    {
+        return view('admin.buku-show', ['buku' => $buku]);
+    }
+
+   public function search(Request $request)
+    {
+        $term = $request->input('term');
+
+        $buku = Buku::where('stok', '>', 0) 
+                    ->where(function ($query) use ($term) {
+                        $query->where('judul', 'LIKE', '%' . $term . '%')
+                                ->orWhere('author', 'LIKE', '%' . $term . '%')
+                                ->orWhere('barcode', 'LIKE', '%' . $term . '%');
+                    })
+                    ->select('id', 'judul as text')
+                    ->get();
+
+        return response()->json($buku);
     }
 
     public function add()
@@ -26,31 +71,39 @@ class BukuController extends Controller
     {
         $validated = $request->validate([
             'judul' => 'required|string|max:255|unique:buku',
+            'author' => 'required|string|max:255',
             'jenis_id' => 'required|exists:jenis,id',
             'stok' => 'required|integer|min:0',
             'kondisi' => 'required|string|max:50',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
         ]);
 
-        $path = null;
-        if ($request->file('gambar')) {
-            $path = $request->file('gambar')->store('gambar-buku', 'public');
+        try {
+            DB::beginTransaction();
+            $gambar = null;
+            if ($request->hasFile('gambar')) {
+                $gambar = $request->file('gambar')->store('gambar-buku', 'public');
+            }
+
+            $barcode = date('Ymd') . '-' . Str::random(6);
+
+            $bukuData = $request->validated();
+            $bukuData['gambar'] = $gambar;
+            $bukuData['barcode'] = $barcode;
+
+            Buku::create($bukuData);
+
+            DB::commit();
+            return redirect()->route('admin.buku.index')->with('status', 'Buku berhasil ditambahkan');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('Gagal menambah buku: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menambah buku.')->withInput();
         }
-
-        Buku::create([
-            'judul' => $validated['judul'],
-            'jenis_id' => $validated['jenis_id'],
-            'stok' => $validated['stok'],
-            'kondisi' => $validated['kondisi'],
-            'gambar' => $path,
-        ]);
-
-        return redirect('/admin/buku')->with('status', 'Buku berhasil ditambahkan');
     }
 
-    public function edit($slug)
+    public function edit(Buku $buku)
     {
-        $buku = Buku::where('slug', $slug)->firstOrFail();
         $jenis = Jenis::all();
         return view('admin.buku-edit', ['buku' => $buku, 'jenis' => $jenis]);
     }
@@ -59,8 +112,15 @@ class BukuController extends Controller
     {
         $buku = Buku::where('slug', $slug)->firstOrFail();
 
+        if ($request->has('generate_barcode')) {
+            $buku->barcode = date('Ymd') . '-' . Str::random(6);
+            $buku->save();
+            return redirect()->back()->with('status', 'Barcode baru berhasil dibuat!');
+        }
+
         $validated = $request->validate([
             'judul' => 'required|string|max:255|unique:buku,judul,' . $buku->id,
+            'author' => 'required|string|max:255',
             'jenis_id' => 'required|exists:jenis,id',
             'stok' => 'required|integer|min:0',
             'kondisi' => 'required|string|max:50',
@@ -77,27 +137,24 @@ class BukuController extends Controller
 
         $buku->update([
             'judul' => $validated['judul'],
+            'author' => $validated['author'],
             'jenis_id' => $validated['jenis_id'],
             'stok' => $validated['stok'],
             'kondisi' => $validated['kondisi'],
             'gambar' => $path,
         ]);
 
-        return redirect('/admin/buku')->with('status', 'Buku berhasil diperbarui');
+        return redirect()->route('admin.buku.index')->with('status', 'Buku berhasil diperbarui');
     }
 
-    public function delete($slug)
+    public function delete(Buku $buku)
     {
-        $buku = Buku::where('slug', $slug)->firstOrFail();
         return view('admin.buku-delete', ['buku' => $buku]);
     }
 
-
-    public function destroy($slug)
+    public function destroy(Buku $buku)
     {
-        $buku = Buku::where('slug', $slug)->firstOrFail();
         $buku->delete();
-
         return redirect()->route('admin.buku.index')->with('status', 'Buku berhasil dihapus');
     }
 
@@ -107,11 +164,9 @@ class BukuController extends Controller
         return view('admin.deleted-buku', ['bukuDihapus' => $bukuDihapus]);
     }
 
-    public function restore($slug)
+    public function restore(Buku $buku)
     {
-        $buku = Buku::withTrashed()->where('slug', $slug)->firstOrFail();
         $buku->restore();
-
         return redirect()->route('admin.buku.deleted')->with('status', 'Buku berhasil dipulihkan');
     }
 }

@@ -34,13 +34,8 @@
                     @csrf
                     <div class="mb-3">
                         <label for="peminjaman" class="form-label">Pilih Peminjaman</label>
-                        <select name="peminjaman_id" id="peminjaman" class="form-select select2" required>
-                            <option value="">Pilih Siswa & Buku yang akan dikembalikan</option>
-                            @foreach ($peminjaman as $item)
-                                <option value="{{ $item->id }}">
-                                    {{ $item->user->name }} | {{ $item->buku->judul }}
-                                </option>
-                            @endforeach
+                        <select name="peminjaman_id" id="peminjaman" class="form-select" required>
+                            <option value="">Cari Siswa atau Judul Buku</option>
                         </select>
                     </div>
                     <div class="mt-4">
@@ -57,8 +52,26 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('.select2').select2({
-            theme: 'bootstrap-5'
+        $('#peminjaman').select2({
+            theme: 'bootstrap-5',
+            ajax: {
+                url: '{{ route("admin.peminjaman.search") }}',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        term: params.term 
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Cari nama siswa atau judul buku...',
+            minimumInputLength: 3,
         });
     });
 </script>

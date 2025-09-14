@@ -24,12 +24,41 @@ class RentalBukuController extends Controller
         return view('admin.rent-buku', ['siswa' => $users, 'buku' => $buku]);
     }
 
+    public function searchPeminjaman(Request $request)
+    {
+        $term = $request->input('term');
+        $peminjaman = Peminjaman::where('status', 'Dipinjam')
+            ->where(function ($query) use ($term) {
+                $query->whereHas('user', function ($q) use ($term) {
+                    $q->where('name', 'LIKE', '%' . $term . '%');
+                })->orWhereHas('buku', function ($q) use ($term) {
+                    $q->where('judul', 'LIKE', '%' . $term . '%');
+                });
+            })
+            ->with(['user', 'buku'])
+            ->get();
+
+        $results = $peminjaman->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->user->name . ' - ' . $item->buku->judul
+            ];
+        });
+
+        return response()->json($results);
+    }
+
     public function rent(Request $request)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'buku_id' => 'required|exists:buku,id',
-            'tgl_jatuh_tempo' => 'required|date|after_or_equal:today', // Wajib diisi, format tanggal, dan tidak boleh tanggal kemarin
+            'tgl_jatuh_tempo' => [
+                'required',
+                'date',
+                'after_or_equal:today',
+                'before_or_equal:' . now()->addWeek()->toDateString(), 
+            ],  // Tidak boleh tanggal kemarin dan max 7 hari
         ]);
 
         try {
@@ -51,7 +80,7 @@ class RentalBukuController extends Controller
             'user_id' => $user->id,
             'buku_id' => $buku->id,
             'tgl_pinjam' => Carbon::now()->toDateString(),
-            'tgl_jatuh_tempo' => $request->tgl_jatuh_tempo,
+            'tgl_jatuh_tempo' => Carbon::parse($request->tgl_jatuh_tempo)->toDateString(),
             'status' => 'Dipinjam',
         ]);
 
@@ -95,25 +124,35 @@ class RentalBukuController extends Controller
 
             $tarif_denda_harian = 5000;
             $total_denda = 0;
-            $tgl_kembali = Carbon::now();
-            $tgl_jatuh_tempo = Carbon::parse($peminjaman->tgl_jatuh_tempo);
+            
+            $actualReturnDate = Carbon::now();
+            $calculationDate = $actualReturnDate->copy()->startOfDay();
+            $dueDate = Carbon::parse($peminjaman->tgl_jatuh_tempo)->startOfDay();
 
-            if ($tgl_kembali->gt($tgl_jatuh_tempo)) {
-                $hari_terlambat = $tgl_kembali->diffInDays($tgl_jatuh_tempo);
+            if ($calculationDate->gt($dueDate)) {
+                $hari_terlambat = abs($calculationDate->diffInDays($dueDate)); 
                 $total_denda = $hari_terlambat * $tarif_denda_harian;
             }
 
-            $peminjaman->tgl_kembali = $tgl_kembali->toDateString();
+            $status_denda = ($total_denda > 0) ? 'Belum Lunas' : 'Lunas';
+
+            $peminjaman->tgl_kembali = $actualReturnDate->toDateString();
             $peminjaman->status = 'Kembali';
             $peminjaman->denda = $total_denda;
+            $peminjaman->status_denda = $status_denda;
             $peminjaman->save();
 
             $peminjaman->buku->increment('stok');
             
             DB::commit();
 
+            $pesan_sukses = 'Buku berhasil dikembalikan!';
+            if ($total_denda > 0) {
+                $pesan_sukses .= ' Denda: Rp ' . number_format($total_denda, 0, ',', '.');
+            }
+
             return redirect()->route('admin.return.buku')
-                ->with('message', 'Buku berhasil dikembalikan! Denda: Rp ' . number_format($total_denda))
+                ->with('message', $pesan_sukses)
                 ->with('alert-class', 'alert-success');
 
         } catch (\Throwable $th) {
@@ -135,7 +174,12 @@ class RentalBukuController extends Controller
     {
         $request->validate([
             'buku_id' => 'required|exists:buku,id',
-            'tgl_jatuh_tempo' => 'required|date|after_or_equal:today',
+            'tgl_jatuh_tempo' => [
+                'required',
+                'date',
+                'after_or_equal:today',
+                'before_or_equal:' . now()->addWeek()->toDateString(), 
+            ],  // Tidak boleh tanggal kemarin dan max 7 hari
         ]);
 
         $userId = Auth::id();
@@ -158,7 +202,7 @@ class RentalBukuController extends Controller
                 'user_id' => $userId, 
                 'buku_id' => $buku->id,
                 'tgl_pinjam' => Carbon::now()->toDateString(),
-                'tgl_jatuh_tempo' => $request->tgl_jatuh_tempo,
+                'tgl_jatuh_tempo' => Carbon::parse($request->tgl_jatuh_tempo)->toDateString(),
                 'status' => 'Dipinjam',
             ]);
 

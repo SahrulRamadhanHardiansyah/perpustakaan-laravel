@@ -20,8 +20,12 @@ class UserController extends Controller
         $jenis = Jenis::all();
         $bukuQuery = Buku::with('jenis');
 
-        if ($request->filled('judul')) {
-            $bukuQuery->where('judul', 'like', '%' . $request->judul . '%');
+        if ($request->filled('keyword')) {
+            $bukuQuery->where(function ($query) use ($request) {
+                $query->where('judul', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('author', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('barcode', 'like', '%' . $request->keyword . '%');
+            });
         }
 
         if ($request->filled('jenis')) {

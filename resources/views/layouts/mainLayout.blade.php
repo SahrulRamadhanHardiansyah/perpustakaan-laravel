@@ -40,6 +40,9 @@
                             <a href="{{ route('welcome') }}" class="{{ request()->routeIs('welcome') ? 'active' : '' }}">
                                 <i class="bi bi-house-door-fill"></i> Beranda
                             </a>
+                            {{-- <a href="{{ route('admin.barcode.search.index') }}" class="{{ request()->routeIs('admin.barcode.search.index') ? 'active' : '' }}" >
+                                <i class="bi bi-upc-scan"></i> Scan Barcode
+                            </a> --}}
                             <a href="{{ route('admin.buku.index') }}" class="{{ request()->routeIs('admin.buku*') ? 'active' : '' }}">
                                 <i class="bi bi-book"></i> Buku
                             </a>
@@ -54,6 +57,9 @@
                             </a>
                             <a href="{{ route('admin.return.buku') }}" class="{{ request()->routeIs('admin.return.buku') ? 'active' : '' }}">
                                 <i class="bi-arrow-return-left"></i> Kembalikan Buku
+                            </a>
+                            <a href="{{ route('admin.denda.index') }}" class="{{ request()->routeIs('admin.denda.index') ? 'active' : '' }}">
+                                <i class="bi-cash-coin"></i> Manajemen Denda
                             </a>
                             <a href="{{ route('admin.peminjaman') }}" class="{{ request()->routeIs('admin.peminjaman') ? 'active' : '' }}">
                                 <i class="bi bi-journals"></i> Log Peminjaman
@@ -87,8 +93,8 @@
                             <i class="bi bi-person-fill"></i> Profile
                         </a>
                         <hr class="text-white my-3"> {{-- Seperator --}}
-                        <a href="{{ route('logout') }}">
-                                <i class="bi bi-box-arrow-right"></i> Logout
+                        <a href="{{ route('logout') }}" class="text-danger">
+                            <i class="bi bi-box-arrow-right text-danger"></i> Logout
                         </a>
                     @endif
                 </div>

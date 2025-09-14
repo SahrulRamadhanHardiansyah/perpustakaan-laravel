@@ -32,19 +32,29 @@
             <div class="col-lg-8">
                 <form action="{{ route('proses.pinjam.buku') }}" method="post">
                     @csrf
+                    
                     <div class="mb-3">
-                        <label for="buku" class="form-label">Pilih Buku yang Ingin Dipinjam</label>
-                        <select name="buku_id" id="buku" class="form-select select2" required>
+                        <label for="buku" class="form-label">Buku</label>
+                        <select name="buku_id" id="buku" class="form-select" required>
                             <option value="">Pilih Buku</option>
-                            @foreach ($buku as $item)
-                                <option value="{{ $item->id }}">{{ $item->judul }}</option>
-                            @endforeach
                         </select>
-                        <div class="mb-3">
-                            <label for="tgl_jatuh_tempo" class="form-label">Tanggal Jatuh Tempo</label>
-                            <input type="date" class="form-control" id="tgl_jatuh_tempo" name="tgl_jatuh_tempo" value="{{ old('tgl_jatuh_tempo') }}" required>
-                        </div>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="tgl_jatuh_tempo" class="form-label">Tanggal Jatuh Tempo</label>
+                        <select name="tgl_jatuh_tempo" id="tgl_jatuh_tempo" class="form-select" required>
+                            <option value="" disabled selected>Pilih durasi peminjaman...</option>
+                            @for ($i = 1; $i <= 7; $i++)
+                                @php
+                                    $date = \Carbon\Carbon::now()->addDays($i);
+                                @endphp
+                                <option value="{{ $date->toDateString() }}">
+                                    {{ $date->isoFormat('dddd, D MMMM Y') }} ({{ $i }} hari)
+                                </option>
+                            @endfor
+                        </select>
+                    </div>
+
                     <div class="mt-4">
                         <button class="btn btn-primary" type="submit"><i class="bi bi-journal-plus me-2"></i>Pinjam Buku</button>
                         <a href="/" class="btn btn-secondary">Batal</a>
@@ -59,8 +69,34 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('.select2').select2({
-            theme: 'bootstrap-5'
+        // dropdown buku
+        $('#buku').select2({
+            theme: 'bootstrap-5',
+            ajax: {
+                url: '{{ route("buku.search.public") }}',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        term: params.term 
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Cari judul buku atau scan barcode...',
+            minimumInputLength: 3, 
+        });
+
+        // dropdown durasi peminjaman
+        $('#tgl_jatuh_tempo').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Pilih tanggal jatuh tempo',
+            minimumResultsForSearch: Infinity
         });
     });
 </script>

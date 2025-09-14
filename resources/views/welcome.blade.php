@@ -3,6 +3,9 @@
 @section('title', 'Beranda')
 
 @section('content')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
     @if (session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
@@ -51,7 +54,7 @@
         <form action="" method="get">
             <div class="row g-2">
                 <div class="col-12 col-sm-5">
-                    <input type="text" name="judul" class="form-control" placeholder="Cari berdasarkan judul..." value="{{ request('judul') }}">
+                    <input type="text" name="keyword" class="form-control" placeholder="Cari judul, author, atau scan barcode..." value="{{ request('keyword') }}">
                 </div>
                 <div class="col-12 col-sm-5">
                     <select name="jenis" id="jenis" class="form-select">
@@ -76,29 +79,31 @@
         <div class="row">
             @forelse ($buku as $item)
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                    <div class="card h-100 book-card shadow-sm">
-                        <div class="position-relative">
-                            <img src="{{ $item->gambar ? asset('storage/' . $item->gambar) : asset('images/cover-not-found.png') }}" class="card-img-top" draggable="false" alt="{{ $item->slug }}">
-                            
-                            <span class="badge {{ $item->status == 'Tersedia' ? 'text-bg-success' : 'text-bg-danger' }} card-status-badge">
-                                {{ $item->status }}
-                            </span>
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{ Str::limit($item->judul, 50, '...') }}</h5>
-                            <div class="mt-auto d-flex justify-content-between align-items-center">
-                                @if ($item->jenis)
-                                    <span class="badge text-bg-info me-1">{{ $item->jenis->name }}</span>
-                                @else
-                                    <span class="badge text-bg-secondary me-1">Tidak Ada Jenis</span>
-                                @endif
-
-                                <span class="badge {{ $item->stok > 0 ? 'text-bg-success' : 'text-bg-danger' }}">
-                                    Stok: {{ $item->stok }}
+                    <a href="{{ route('admin.buku.show', $item->slug) }}" class="text-decoration-none">
+                        <div class="card h-100 book-card shadow-sm">
+                            <div class="position-relative">
+                                <img src="{{ $item->gambar ? asset('storage/' . $item->gambar) : asset('images/cover-not-found.png') }}" class="card-img-top" draggable="false" alt="{{ $item->slug }}">
+                                
+                                <span class="badge {{ $item->status == 'Tersedia' ? 'text-bg-success' : 'text-bg-danger' }} card-status-badge">
+                                    {{ $item->status }}
                                 </span>
                             </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-dark">{{ Str::limit($item->judul, 50, '...') }}</h5>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    @if ($item->jenis)
+                                        <span class="badge text-bg-info me-1">{{ $item->jenis->name }}</span>
+                                    @else
+                                        <span class="badge text-bg-secondary me-1">Tidak Ada Jenis</span>
+                                    @endif
+    
+                                    <span class="badge {{ $item->stok > 0 ? 'text-bg-success' : 'text-bg-danger' }}">
+                                        Stok: {{ $item->stok }}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             @empty
                 <div class="col-12">
@@ -117,4 +122,14 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#jenis').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Filter berdasarkan jenis'
+            });
+        });
+    </script>
 @endsection

@@ -29,6 +29,18 @@ class AdminController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $term = $request->input('term');
+        
+        $siswa = User::where('role_id', 2) 
+                     ->where('name', 'LIKE', '%' . $term . '%')
+                     ->select('id', 'name as text')
+                     ->get();
+
+        return response()->json($siswa);
+    }
+
     public function profile()
     {
         $user = Auth::user();

@@ -4,7 +4,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController as AuthForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController as AuthResetPasswordController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\BukuController;
+use App\Http\Controllers\DendaController;
 use App\Http\Controllers\JenisController;
 use App\Http\Controllers\RentalBukuController;
 use App\Http\Controllers\UserController;
@@ -46,6 +48,9 @@ Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/', [UserController::class, 'index'])->name('welcome');
 
+    // Cari buku publik
+    Route::get('/buku/search', [BukuController::class, 'search'])->name('buku.search.public');
+
     // Logout
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -79,14 +84,16 @@ Route::middleware('auth')->group(function () {
 
         // Manage Buku Routes
         Route::get('buku', [BukuController::class, 'index'])->name('buku.index');
+        Route::get('buku/search', [BukuController::class, 'search'])->name('buku.search'); 
+        Route::get('buku/{buku:slug}', [BukuController::class, 'show'])->name('buku.show');
         Route::get('add-buku', [BukuController::class, 'add'])->name('buku.add');
         Route::post('add-buku', [BukuController::class, 'store'])->name('buku.store');
-        Route::get('buku-edit/{slug}', [BukuController::class, 'edit'])->name('buku.edit');
-        Route::put('buku-edit/{slug}', [BukuController::class, 'update'])->name('buku.update');
-        Route::get('buku-delete/{slug}', [BukuController::class, 'delete'])->name('buku.delete');
-        Route::get('buku-destroy/{slug}', [BukuController::class, 'destroy'])->name('buku.destroy');
+        Route::get('buku-edit/{buku:slug}', [BukuController::class, 'edit'])->name('buku.edit');
+        Route::put('buku-edit/{buku:slug}', [BukuController::class, 'update'])->name('buku.update');
+        Route::get('buku-delete/{buku:slug}', [BukuController::class, 'delete'])->name('buku.delete');
+        Route::get('buku-destroy/{buku:slug}', [BukuController::class, 'destroy'])->name('buku.destroy');
         Route::get('buku-deleted', [BukuController::class, 'deleted'])->name('buku.deleted');
-        Route::get('buku-restore/{slug}', [BukuController::class, 'restore'])->name('buku.restore');
+        Route::get('buku-restore/{buku:slug}', [BukuController::class, 'restore'])->name('buku.restore');
 
         // Peminjaman dan Pengembalian
         Route::get('rent-buku', [RentalBukuController::class, 'index'])->name('rent.buku');
@@ -94,6 +101,7 @@ Route::middleware('auth')->group(function () {
         Route::get('return-buku', [RentalBukuController::class, 'return'])->name('return.buku');
         Route::post('return-buku', [RentalBukuController::class, 'returning'])->name('proses.return.buku');
         Route::get('peminjaman', [RentalBukuController::class, 'peminjaman'])->name('peminjaman');
+        Route::get('peminjaman/search', [RentalBukuController::class, 'searchPeminjaman'])->name('peminjaman.search');
 
         // Manage Jenis Routes
         Route::get('jenis', [JenisController::class, 'index'])->name('jenis.index');
@@ -108,6 +116,7 @@ Route::middleware('auth')->group(function () {
 
         // Manage Siswa Routes
         Route::get('siswa', [AdminController::class, 'showSiswa'])->name('siswa.index');
+        Route::get('siswa/search', [AdminController::class, 'search'])->name('siswa.search');
         Route::get('siswa-detail/{slug}', [AdminController::class, 'detail'])->name('siswa.detail');
         Route::get('siswa-edit/{slug}', [AdminController::class, 'edit'])->name('siswa.edit');
         Route::put('siswa-edit/{slug}', [AdminController::class, 'update'])->name('siswa.update');
@@ -115,5 +124,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('siswa-destroy/{slug}', [AdminController::class, 'destroy'])->name('siswa.destroy');
         Route::get('siswa-banned', [AdminController::class, 'banned'])->name('siswa.banned');
         Route::post('siswa-restore/{slug}', [AdminController::class, 'restore'])->name('siswa.restore');
+
+        // Denda Routes
+        Route::get('denda', [DendaController::class, 'index'])->name('denda.index');
+        Route::post('denda/bayar/{peminjaman_id}', [DendaController::class, 'bayar'])->name('denda.bayar');
+
+        // Barcode
+        Route::get('pencarian-barcode', [BarcodeController::class, 'index'])->name('barcode.search.index');
+        Route::post('pencarian-barcode/cari', [BarcodeController::class, 'search'])->name('barcode.search.process');
     });
 });
