@@ -8,6 +8,7 @@ use App\Models\Peminjaman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -67,25 +68,31 @@ class UserController extends Controller
         return view('profile.edit', ['user' => $user]);
     }
 
-    public function update(Request $request) {
-        $user = User::find(Auth::id());
+    public function update(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         $request->validate([
-            'name' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['required', 'string', 'max:255'],
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        if ($user) {
-            $user->name = $request->name;
-            $user->phone = $request->phone;
-            $user->address = $request->address;
-            $user->save();
-
-            return redirect(route('profile'))->with('status', 'Profile berhasil diperbarui');
+        $updateData = $request->only('name', 'phone', 'address');
+        
+        if ($request->hasFile('profile_picture')) {
+            if ($user->profile_picture) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+            $path = $request->file('profile_picture')->store('profile-pictures', 'public');
+            $updateData['profile_picture'] = $path;
         }
 
-        return redirect(route('profile'))->with('error', 'Gagal memperbarui profil. Pengguna tidak ditemukan');
+        $user->update($updateData);
+
+        return redirect()->route('profile')->with('status', 'Profil berhasil diperbarui.');
     }
 
     

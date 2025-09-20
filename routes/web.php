@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
 
     // Cari buku publik
     Route::get('/buku/search', [BukuController::class, 'search'])->name('buku.search.public');
+    Route::get('buku-visual-search', [BukuController::class, 'searchVisual'])->name('buku.search.visual');
 
     // Logout
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
@@ -81,7 +82,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [AdminController::class, 'profile'])->name('profile.index');
         Route::get('/profile/edit', [AdminController::class, 'profileEdit'])->name('profile.edit');
         Route::patch('/profile/update', [AdminController::class, 'profileUpdate'])->name('profile.update');
-
+        
         // Manage Buku Routes
         Route::get('buku', [BukuController::class, 'index'])->name('buku.index');
         Route::get('buku/search', [BukuController::class, 'search'])->name('buku.search'); 

@@ -61,6 +61,28 @@ class BukuController extends Controller
         return response()->json($buku);
     }
 
+    public function searchVisual(Request $request)
+    {
+        $query = Buku::where('stok', '>', 0);
+
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('judul', 'like', '%' . $keyword . '%')
+                ->orWhere('author', 'like', '%' . $keyword . '%')
+                ->orWhere('barcode', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis_id', $request->jenis);
+        }
+
+        $buku = $query->take(12)->get(); 
+
+        return view('admin.partials._book_selection_cards', ['bukuList' => $buku]);
+    }
+
     public function add()
     {
         $jenis = Jenis::all();

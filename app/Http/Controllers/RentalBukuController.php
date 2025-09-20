@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Buku;
+use App\Models\Jenis;
 use App\Models\Peminjaman;
 use App\Models\User;
 use Carbon\Carbon;
@@ -20,8 +21,9 @@ class RentalBukuController extends Controller
         })->get();
 
         $buku = Buku::where('stok', '>', 0)->get();
+        $jenis = Jenis::all();
 
-        return view('admin.rent-buku', ['siswa' => $users, 'buku' => $buku]);
+        return view('admin.rent-buku', ['siswa' => $users, 'buku' => $buku, 'jenis' => $jenis]);
     }
 
     public function searchPeminjaman(Request $request)
@@ -166,6 +168,7 @@ class RentalBukuController extends Controller
 
     public function pinjamBuku()
     {
+        $jenis = Jenis::all();
         $buku = Buku::where('stok', '>', 0)->get();
         return view('pinjam-buku', ['buku' => $buku]);
     }

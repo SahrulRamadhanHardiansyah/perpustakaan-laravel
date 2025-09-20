@@ -18,14 +18,48 @@
 <body>
 
     <div class="main d-flex flex-column">
-        <nav class="navbar navbar-expand-lg">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid px-4">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="/">
                     <i class="bi bi-book-half me-2"></i> Perpustakaan Laravel
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        @auth
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Hi, {{ Auth::user()->name }}
+                                    <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=random&color=fff' }}"
+                                        alt="Foto Profil" 
+                                        class="rounded-circle ms-2 me-1" 
+                                        style="width: 32px; height: 32px; object-fit: cover;">
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    @if (Auth::user()->isPustakawan() || Auth::user()->isGuru())
+                                        <li><a class="dropdown-item" href="{{ route('admin.profile.index') }}">
+                                            <i class="bi bi-person-circle me-2"></i>Profil</a>
+                                        </li>
+                                    @else
+                                        <li><a class="dropdown-item" href="{{ route('profile') }}">
+                                            <i class="bi bi-person-circle me-2"></i>Profil</a>
+                                        </li>
+                                    @endif
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="{{ route('logout') }}">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endauth
+                    </ul>
+                </div>
             </div>
         </nav>
 

@@ -6,15 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Profil Anda</h2>
         <a href="{{ route('admin.profile.edit') }}" class="btn btn-primary d-flex align-items-center">
-            <lord-icon
-                src="https://cdn.lordicon.com/exymduqj.json"
-                trigger="hover"
-                stroke="bold"
-                state="in-dynamic"
-                colors="primary:#ffffff"
-                class="me-2"
-                style="width:25px;height:25px">
-            </lord-icon>
+            <i class="bi bi-pencil me-2"></i>
             Edit Profile
         </a>
     </div>
@@ -24,6 +16,13 @@
             {{ session('status') }}
         </div>
     @endif
+
+    <div class="text-center mb-4">
+        <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random' }}" 
+            alt="Foto Profil" 
+            class="img-fluid rounded-circle" 
+            style="width: 150px; height: 150px; object-fit: cover;">
+    </div>
     
     <dl class="row mt-4">
         <dt class="col-sm-3 d-flex align-items-center mb-3">

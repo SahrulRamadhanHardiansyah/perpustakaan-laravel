@@ -8,6 +8,7 @@ use App\Models\Peminjaman;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -59,12 +60,23 @@ class AdminController extends Controller
 
         $request->validate([
             'name' => 'string|max:255',
-            'email' => 'email|max:255',
             'phone' => 'numeric',
             'address' => 'string|nullable',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $user->update($request->only('name', 'email', 'phone', 'address'));
+        $updateData = $request->only('name', 'phone', 'address');
+
+        if ($request->hasFile('profile_picture')) {
+            if ($user->profile_picture) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $updateData['profile_picture'] = $path;
+        }
+
+        $user->update($updateData);
 
         return redirect()->route('admin.profile.index')->with('status', 'Profil berhasil diperbarui.');
     }

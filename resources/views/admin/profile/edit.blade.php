@@ -34,9 +34,20 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('admin.profile.update') }}">
+                        <form method="POST" action="{{ route('admin.profile.update') }}"  enctype="multipart/form-data">
                             @csrf
-                            @method('PATCH') <div class="mb-3">
+                            @method('PATCH') 
+
+                            <div class="mb-3 text-center">
+                                <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random' }}" 
+                                    alt="Foto Profil Saat Ini" 
+                                    class="img-fluid rounded-circle mb-2" 
+                                    style="width: 120px; height: 120px; object-fit: cover;">
+                                <label for="profile_picture" class="form-label d-block">Ganti Foto Profil</label>
+                                <input type="file" class="form-control" id="profile_picture" name="profile_picture">
+                            </div>
+                            
+                            <div class="mb-3">
                                 <label for="name" class="form-label">Nama</label>
                                 <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}" required>
                             </div>
