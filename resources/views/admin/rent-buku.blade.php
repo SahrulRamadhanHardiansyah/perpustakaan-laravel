@@ -55,7 +55,7 @@
 
 <div class="row">
     <div class="col-md-5">
-        <form action="{{ route('admin.rent.buku.store') }}" method="post" id="loan-form">
+        <form action="{{ Auth::user()->isPustakawan() ? route('admin.rent.buku.store') : route('guru.rent.buku.store') }}" method="post" id="loan-form">
             @csrf
             <input type="hidden" name="buku_id" id="selected-book-id" required>
 
@@ -64,12 +64,14 @@
                     <h5>1. Detail Peminjaman</h5>
                 </div>
                 <div class="card-body">
+                    @if (Auth::user()->isPustakawan())
                     <div class="mb-3">
                         <label for="user" class="form-label">Pilih Siswa</label>
                         <select name="user_id" id="user" class="form-select" required>
                             <option value="">Cari nama siswa...</option>
                         </select>
                     </div>
+                    @endif
                     <div class="mb-3">
                         <label for="tgl_jatuh_tempo" class="form-label">Pilih Tanggal Jatuh Tempo</label>
                         <select name="tgl_jatuh_tempo" id="tgl_jatuh_tempo" class="form-select" required>
@@ -135,18 +137,20 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#user').select2({
-            theme: 'bootstrap-5',
-            ajax: {
-                url: '{{ route("admin.siswa.search") }}',
-                dataType: 'json',
-                delay: 250,
-                data: function(params) { return { term: params.term }; },
-                processResults: function(data) { return { results: data }; },
-                cache: true
-            },
-            placeholder: 'Cari nama siswa...',
-        });
+        if ($('#user').length) {
+            $('#user').select2({
+                theme: 'bootstrap-5',
+                ajax: {
+                    url: '{{ route("admin.siswa.search") }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) { return { term: params.term }; },
+                    processResults: function(data) { return { results: data }; },
+                    cache: true
+                },
+                placeholder: 'Cari nama siswa...',
+            });
+        }
 
         $('#jenis-filter').select2({
             theme: 'bootstrap-5',

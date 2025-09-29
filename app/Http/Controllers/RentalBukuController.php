@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log; 
+use Illuminate\Validation\ValidationException;
 
 class RentalBukuController extends Controller
 {
@@ -52,22 +53,26 @@ class RentalBukuController extends Controller
 
     public function rent(Request $request)
     {
+        /** @var \App\Models\User $loggedInUser */
+        $loggedInUser = Auth::user();
+
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_id' => ($loggedInUser->isPustakawan() ? 'required' : 'nullable') . '|exists:users,id',
             'buku_id' => 'required|exists:buku,id',
             'tgl_jatuh_tempo' => [
                 'required',
                 'date',
                 'after_or_equal:today',
                 'before_or_equal:' . now()->addWeek()->toDateString(), 
-            ],  // Tidak boleh tanggal kemarin dan max 7 hari
+            ],
         ]);
 
         try {
             DB::beginTransaction();
 
             $buku = Buku::findOrFail($request->buku_id);
-            $user = User::findOrFail($request->user_id);
+            $peminjamId = $loggedInUser->isPustakawan() ? $request->user_id : $loggedInUser->id;
+            $user = User::findOrFail($peminjamId);
 
             if ($buku->stok <= 0) {
                 return redirect()->route('admin.rent.buku')->with('message', 'Gagal, stok buku habis!')->with('alert-class', 'alert-danger');
@@ -79,30 +84,37 @@ class RentalBukuController extends Controller
             }
 
             Peminjaman::create([
-            'user_id' => $user->id,
-            'buku_id' => $buku->id,
-            'tgl_pinjam' => Carbon::now()->toDateString(),
-            'tgl_jatuh_tempo' => Carbon::parse($request->tgl_jatuh_tempo)->toDateString(),
-            'status' => 'Dipinjam',
-        ]);
+                'user_id' => $user->id,
+                'buku_id' => $buku->id,
+                'tgl_pinjam' => Carbon::now()->toDateString(),
+                'tgl_jatuh_tempo' => Carbon::parse($request->tgl_jatuh_tempo)->toDateString(),
+                'status' => 'Dipinjam',
+            ]);
 
             $buku->decrement('stok');
-
             DB::commit();
 
-            return redirect()->route('admin.rent.buku')->with('message', 'Buku berhasil dipinjam!')->with('alert-class', 'alert-success');
+            return back()->with('message', 'Buku berhasil dipinjam!')->with('alert-class', 'alert-success');
 
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error('Gagal melakukan peminjaman: ' . $th->getMessage());
-
-            return redirect()->route('admin.rent.buku')->with('message', 'Terjadi kesalahan saat proses peminjaman.')->with('alert-class', 'alert-danger');
+            return back()->with('message', 'Terjadi kesalahan saat proses peminjaman.')->with('alert-class', 'alert-danger');
         }
     }
 
     public function return()
     {
-        $peminjamanAktif = Peminjaman::where('status', 'Dipinjam')->with(['user', 'buku'])->get();
+        $peminjamanQuery = Peminjaman::where('status', 'Dipinjam');
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user->isGuru()) {
+            $peminjamanQuery->where('user_id', $user->id);
+        }
+
+        $peminjamanAktif = $peminjamanQuery->with(['user', 'buku'])->get();
 
         return view('admin.return-buku', ['peminjaman' => $peminjamanAktif]);
     }
@@ -170,7 +182,7 @@ class RentalBukuController extends Controller
     {
         $jenis = Jenis::all();
         $buku = Buku::where('stok', '>', 0)->get();
-        return view('pinjam-buku', ['buku' => $buku]);
+        return view('pinjam-buku', ['buku' => $buku, 'jenis' => $jenis]);
     }
 
     public function prosesPinjamBuku(Request $request)

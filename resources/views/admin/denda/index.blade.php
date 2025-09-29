@@ -25,7 +25,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>No</th>
-                    <th>Nama Siswa</th>
+                    <th>Nama</th>
                     <th>Judul Buku</th>
                     <th>Tanggal Kembali</th>
                     <th>Jumlah Denda</th>
@@ -34,9 +34,14 @@
             </thead>
             <tbody>
                 @forelse ($dendaList as $item)
-                    <tr>
+                    <tr class="{{ $item->user->isGuru() ? 'table-info' : '' }}">
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $item->user->name }}</td>
+                        <td>
+                            {{ $item->user->name }}
+                            @if ($item->user->isGuru())
+                                <span class="badge text-bg-primary ms-2">Guru</span>
+                            @endif
+                        </td>
                         <td>{{ $item->buku->judul }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->tgl_kembali)->isoFormat('D MMMM Y') }}</td>
                         <td>Rp {{ number_format($item->denda, 0, ',', '.') }}</td>
