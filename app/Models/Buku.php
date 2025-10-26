@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Buku extends Model
@@ -16,11 +17,14 @@ class Buku extends Model
 
     protected $fillable = [
         'judul',
+        'barcode',
+        'slug',
+        'author',
+        'isbn',
         'jenis_id',
         'kondisi',
         'stok',
         'gambar',
-        'slug',
     ];
 
     public function sluggable(): array
@@ -35,6 +39,11 @@ class Buku extends Model
     public function jenis(): BelongsTo
     {
         return $this->belongsTo(Jenis::class);
+    }
+
+    public function peminjaman(): HasMany
+    {
+        return $this->hasMany(Peminjaman::class, 'buku_id', 'id');
     }
 
     public function getStatusAttribute(): string

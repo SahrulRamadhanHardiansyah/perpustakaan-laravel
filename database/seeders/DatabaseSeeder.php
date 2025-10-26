@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,16 +15,18 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             JenisSeeder::class,
+            UserSeeder::class,   
+            BukuSeeder::class,
+            PeminjamanSeeder::class,
         ]);
 
-        User::factory()->create([
-            'name' => 'Admin Pustakawan',
-            'email' => 'admin@gmail.com',
-            'role_id' => 1, 
-        ]);
-
-        User::factory(5)->create([
-            'role_id' => 2, 
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Admin Pustakawan',
+        //     'email' => 'admin@gmail.com',
+        //     'role_id' => 1,
+        // ]);
+        // User::factory(5)->create([
+        //     'role_id' => 2,
+        // ]);
     }
 }
